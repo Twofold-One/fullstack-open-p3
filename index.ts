@@ -1,9 +1,20 @@
-import express, { request, response } from 'express';
+import express from 'express';
+// import requestLogger from './middleware/requestLogger';
+import morgan from 'morgan';
 
 const app = express();
 
 // Middleware
 app.use(express.json());
+// app.use(requestLogger);
+morgan.token('body', (request: express.Request, response: express.Response) =>
+    JSON.stringify(request.body)
+);
+app.use(
+    morgan(
+        ':method :url :status :res[content-length] - :response-time ms :body'
+    )
+);
 
 // hardcoded data
 let persons = [
@@ -60,10 +71,37 @@ app.delete('/api/persons/:id', (request, response) => {
     response.status(204).send(`person with id ${id} deleted`).end();
 });
 
+// function generates uniqe id
+const generateId = (): string => {
+    const uid = Math.floor(Math.random() * Date.now()).toString(16);
+    return uid;
+};
+
+// check for name repeat
+const nameRepeatCheck = (name: string): boolean => {
+    const repeatDetected = persons.find((person) => person.name === name);
+    return repeatDetected ? true : false;
+};
+
 // add a single person
 app.post('/api/persons', (request, response) => {
     const person = request.body;
-    console.log(person);
+
+    if (!person.name || !person.number) {
+        return response.status(400).json({
+            error: 'name or number is missing',
+        });
+    } else if (nameRepeatCheck(person.name)) {
+        return response.status(400).json({
+            error: 'name must be unique',
+        });
+    }
+
+    person.id = generateId();
+    person.date = new Date();
+
+    persons = persons.concat(person);
+
     response.json(person);
 });
 

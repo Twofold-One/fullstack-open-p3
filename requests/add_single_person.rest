@@ -1,6 +1,7 @@
 GET http://localhost:3001/api/persons
 
-###
+# Normal request
+### 
 POST http://localhost:3001/api/persons
 Content-Type: application/json
 
@@ -8,4 +9,34 @@ Content-Type: application/json
     "name": "Evan Geras",
     "number": "21-21-21"
 
+}
+
+# Emty name request
+###
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "",
+    "number": "123"
+}
+
+#empty number request
+###
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Geogre",
+    "number": ""
+}
+
+#name repeat request
+###
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Dan Abramov",
+    "number": "777"
 }
