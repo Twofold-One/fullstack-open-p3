@@ -21,7 +21,8 @@
         "nodemon": "^2.0.15",
         "prettier": "^2.5.1",
         "ts-node": "^10.4.0",
-        "tslib": "^2.3.1"
+        "tslib": "^2.3.1",
+        "typescript": "^4.5.4"
     },
     "prettier": {
         "trailingComma": "es5",
@@ -32,7 +33,6 @@
     "dependencies": {
         "cors": "^2.8.5",
         "express": "^4.17.2",
-        "morgan": "^1.10.0",
-        "typescript": "^4.5.4"
+        "morgan": "^1.10.0"
     }
 }
