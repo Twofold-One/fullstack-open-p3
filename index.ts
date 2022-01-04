@@ -1,10 +1,12 @@
 import express from 'express';
 // import requestLogger from './middleware/requestLogger';
 import morgan from 'morgan';
+import cors from 'cors';
 
 const app = express();
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 // app.use(requestLogger);
 morgan.token('body', (request: express.Request, response: express.Response) =>
@@ -72,8 +74,8 @@ app.delete('/api/persons/:id', (request, response) => {
 });
 
 // function generates uniqe id
-const generateId = (): string => {
-    const uid = Math.floor(Math.random() * Date.now()).toString(16);
+const generateId = (): number => {
+    const uid = Math.floor(Math.random() * Date.now());
     return uid;
 };
 
@@ -98,14 +100,13 @@ app.post('/api/persons', (request, response) => {
     }
 
     person.id = generateId();
-    person.date = new Date();
 
     persons = persons.concat(person);
 
     response.json(person);
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
     console.log(`Serever running on port ${PORT}`);
 });
