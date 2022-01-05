@@ -1,14 +1,17 @@
+import dotenv from 'dotenv';
+dotenv.config();
 import express from 'express';
-// import requestLogger from './middleware/requestLogger';
+import unknownEndpoint from './middleware/unknownEndpoint';
+import errorHandler from './middleware/errorHandler';
 import morgan from 'morgan';
 import cors from 'cors';
+import Person from './models/person';
 
 const app = express();
 
 // Middleware
 app.use(cors());
 app.use(express.json());
-// app.use(requestLogger);
 morgan.token('body', (request: express.Request, response: express.Response) =>
     JSON.stringify(request.body)
 );
@@ -18,6 +21,8 @@ app.use(
     )
 );
 app.use(express.static('build'));
+app.use(unknownEndpoint);
+app.use(errorHandler);
 
 // hardcoded data
 let persons = [
@@ -53,19 +58,25 @@ app.get('/info', (request, response) => {
 });
 
 app.get('/api/persons', (request, response) => {
-    response.json(persons);
+    Person.find({}).then((persons) => {
+        response.json(persons);
+    });
 });
 
 // fetch a single person by id
-app.get('/api/persons/:id', (request, response) => {
-    const id = Number(request.params.id);
-    const person = persons.find((person) => person.id === id);
+app.get('/api/persons/:id', (request, response, next) => {
+    Person.findById(request.params.id)
+        .then((person) => {
+            person ? response.json(person) : response.status(404).end();
+        })
+        .catch((error) => next(error));
+    // const id = Number(request.params.id);
+    // const person = persons.find((person) => person.id === id);
 
-    person
-        ? response.json(person)
-        : response.status(404).send(`Person with id ${id} was not found`).end();
+    // person
+    //     ? response.json(person)
+    //     : response.status(404).send(`Person with id ${id} was not found`).end();
 });
-
 // delete a single person by id
 app.delete('/api/persons/:id', (request, response) => {
     const id = Number(request.params.id);
@@ -102,9 +113,21 @@ app.post('/api/persons', (request, response) => {
 
     person.id = generateId();
 
-    persons = persons.concat(person);
+    const newPerson = new Person({
+        id: generateId(),
+        name: person.name,
+        number: person.number,
+    });
 
-    response.json(person);
+    newPerson
+        .save()
+        .then((savedPerson: { id: number; name: string; number: string }) => {
+            response.json(savedPerson);
+        });
+
+    // persons = persons.concat(person);
+
+    // response.json(person);
 });
 
 const PORT = process.env.PORT || 3001;
