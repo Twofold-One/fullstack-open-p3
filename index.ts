@@ -17,6 +17,7 @@ app.use(
         ':method :url :status :res[content-length] - :response-time ms :body'
     )
 );
+app.use(express.static('build'));
 
 // hardcoded data
 let persons = [
