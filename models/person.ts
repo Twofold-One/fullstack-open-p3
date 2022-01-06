@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+// invalid types for this module
+const uniqueValidator = require('mongoose-unique-validator');
 
 const url = process.env.MONGODB_URI;
 const getURL = url ? url : '';
@@ -16,8 +18,17 @@ mongoose
 
 const personSchema = new mongoose.Schema({
     id: Number,
-    name: String,
-    number: String,
+    name: {
+        type: String,
+        minlength: 3,
+        required: true,
+        unique: true,
+    },
+    number: {
+        type: String,
+        minlength: 8,
+        required: true,
+    },
 });
 
 personSchema.set('toJSON', {
@@ -27,6 +38,9 @@ personSchema.set('toJSON', {
         delete returnedObject.__v;
     },
 });
+
+// applying unique validator
+personSchema.plugin(uniqueValidator);
 
 const Person = mongoose.model('Person', personSchema);
 

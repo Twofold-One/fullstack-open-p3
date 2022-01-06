@@ -38,5 +38,15 @@ Content-Type: application/json
 
 {
     "name": "Dan Abramov",
+    "number": "777-777-777"
+}
+
+#short name and number request
+###
+POST http://localhost:3001/api/persons
+Content-Type: application/json
+
+{
+    "name": "Ad",
     "number": "777"
 }

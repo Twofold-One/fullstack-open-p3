@@ -78,7 +78,7 @@ const nameRepeatCheck = async (name: string): Promise<boolean> => {
 };
 
 // add a single person
-app.post('/api/persons', async (request, response) => {
+app.post('/api/persons', async (request, response, next) => {
     const person = request.body;
 
     if (!person.name || !person.number) {
@@ -103,7 +103,8 @@ app.post('/api/persons', async (request, response) => {
         .save()
         .then((savedPerson: { id: number; name: string; number: string }) => {
             response.json(savedPerson);
-        });
+        })
+        .catch((error: Error) => next(error));
 });
 
 app.put('/api/persons/:id', (request, response, next) => {

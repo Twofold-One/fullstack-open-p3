@@ -8,8 +8,10 @@ const errorHandler = (
 ) => {
     console.log(error.message);
 
-    error.message === 'CastError'
+    error.name === 'CastError'
         ? response.status(400).send({ error: 'malformatted id' })
+        : error.name === 'ValidationError'
+        ? response.status(400).json({ error: error.message })
         : next(error);
 };
 
